@@ -7,12 +7,6 @@ import pandas as pd
 import json
 import pickle
 
-def hash_smiles(smiles):
-    """
-    Generate modified md5 hash of input SMILES string.
-    """
-    return str(int(hashlib.md5(smiles.encode("utf-8")).hexdigest(), 16))
-
 def get_thumbnail(path: str) -> Image:
     img = Image.open(path)
     img.thumbnail((200, 200))
