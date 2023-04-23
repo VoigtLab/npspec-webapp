@@ -22,7 +22,7 @@ for hsmi, smi in zip(df['hashed_smiles'].values, df['smiles'].values):
     img.thumbnail((300,300))
     img.save('imgs/'+hsmi+".png")
 
-df_to_display = df.loc[:, ['name', 'smiles', 'lambda_max']]
+df_to_display = df.loc[:, ['name', 'lambda_max', 'smiles']].drop_duplicates(subset=['name'])
 df_to_display = df_to_display.rename(columns={'smiles': 'SMILES', 'lambda_max': 'Lambda Max'})
 
 if DISPLAY_STRUCTURES:
@@ -34,5 +34,9 @@ if DISPLAY_STRUCTURES:
   )
 
 else:
-  st.dataframe(df_to_display, use_container_width=True)
+  display_smiles = st.checkbox("Show molecule SMILES strings", value=False)
+  if display_smiles:
+    st.dataframe(df_to_display, use_container_width=True)
+  else:
+    st.dataframe(df_to_display.drop(columns=['SMILES']), use_container_width=True)
   display.show_structures_and_spectra(df_to_display, df, pred_spec)
