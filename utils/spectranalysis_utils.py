@@ -2,7 +2,6 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from queue import PriorityQueue
-from matplotlib.patches import ConnectionPatch
 import itertools
 import re
 from scipy.spatial.distance import cdist

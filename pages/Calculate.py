@@ -1,8 +1,6 @@
 import streamlit as st
 import numpy as np
-from tqdm import tqdm
 import plotly.express as px
-
 from utils.utils import *
 from utils.spectranalysis_utils import *
 from data.loaded_data import met_graph, ec_building_blocks, uniqueness_df, pred_spec_bars, pred_spec_df

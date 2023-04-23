@@ -4,8 +4,6 @@ from rdkit.Chem import Draw
 import os
 from data.loaded_data import uniqueness_df, pred_spec_bars
 from utils.utils import *
-import matplotlib.pyplot as plt
-import plotly.express as px
 from components import display
 DISPLAY_STRUCTURES = False
 
