@@ -12,7 +12,7 @@ def show_structures_and_spectra(df_to_display, df, pred_spec):
     st.write('### No molecules selected')
 
   else:
-    st.write('### Selected molecules', selected_rows)
+    st.write('### Selected molecules to learn more', selected_rows)
     st.write('Displaying molecule structure and predicted absorbance peaks')
     cmap = plt.get_cmap('Set2')
 

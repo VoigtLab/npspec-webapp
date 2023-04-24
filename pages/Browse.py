@@ -34,9 +34,10 @@ if DISPLAY_STRUCTURES:
   )
 
 else:
-  display_smiles = st.checkbox("Show molecule SMILES strings", value=False)
+  container = st.container()
+  display_smiles = st.checkbox("Display molecule SMILES strings", value=False)
   if display_smiles:
-    st.dataframe(df_to_display, use_container_width=True)
+    container.dataframe(df_to_display, use_container_width=True)
   else:
-    st.dataframe(df_to_display.drop(columns=['SMILES']), use_container_width=True)
+    container.dataframe(df_to_display.drop(columns=['SMILES']), use_container_width=True)
   display.show_structures_and_spectra(df_to_display, df, pred_spec)
