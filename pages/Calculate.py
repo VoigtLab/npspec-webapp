@@ -67,6 +67,6 @@ fig.update_layout(
 st.plotly_chart(fig)
 
 # Display additional information
-df_to_display = uniqueness_df.loc[:, ['name','mean_dist', 'steps', 'smiles']].drop_duplicates(subset=['name'])
-df_to_display = df_to_display.rename(columns={'smiles': 'SMILES', 'mean_dist': 'Uniqueness', 'steps': 'Met. Steps'})
+df_to_display = uniqueness_df.loc[:, ['display_name','mean_dist', 'steps', 'smiles']].drop_duplicates(subset=['display_name'])
+df_to_display = df_to_display.rename(columns={'display_name':'Name','smiles': 'SMILES', 'mean_dist': 'Uniqueness', 'steps': 'Met. Steps'})
 display.show_structures_and_spectra(df_to_display, uniqueness_df, pred_spec_bars)

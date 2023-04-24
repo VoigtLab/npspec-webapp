@@ -8,6 +8,7 @@ import json
 import pickle
 import colour
 import numpy as np
+from data.loaded_data import name_converter
 
 def convert_wl_to_rgb(w):
     if (w >= 380 and w < 440):
@@ -84,4 +85,7 @@ def convert_df(input_df):
 
 def image_formatter(img_path: str) -> str:
     return f'<img src="data:image/png;base64,{image_to_base64(img_path)}">'
+
+def convert_names_for_display(df):
+    return [name_converter[n] if n in name_converter.keys() else n for n in df['name'].values]
 

@@ -1,5 +1,5 @@
 import streamlit as st  
-from data.loaded_data import uniqueness_df
+from data.loaded_data import uniqueness_df, name_converter
 from utils.utils import *
 
 st.title("Search")
@@ -20,13 +20,15 @@ st.markdown("### Top hits")
 st.markdown("More information below")
 uniqueness_df['rgb'] = [convert_wl_to_rgb(w) for w in uniqueness_df['lambda_max']]
 uniqueness_df['color_dist_to_query'] = [l2_dist(query_color, rgb) for rgb in uniqueness_df['rgb']]
-to_display = uniqueness_df.sort_values(by='color_dist_to_query').iloc[:num_hits].loc[:, ['name', 'lambda_max', 'peak_info']]
-to_display.rename(columns={'lambda_max': 'Wavelength of max abs. (nm)', 'peak_info':'Peak positions (nm)'}, inplace=True)
+to_display = uniqueness_df.sort_values(by='color_dist_to_query').iloc[:num_hits].loc[:, ['display_name', 'lambda_max', 'peak_info']]
+to_display.rename(columns={'display_name':'Name', 'lambda_max': 'Wavelength of max abs. (nm)', 'peak_info':'Peak positions (nm)'}, inplace=True)
 
 col_1, col_2, col_3 = st.columns(3)
 for i, idx in enumerate(uniqueness_df.sort_values(by='color_dist_to_query').index[:num_hits]):
   mol = uniqueness_df.loc[idx, 'hashed_smiles']
   name = uniqueness_df.loc[idx, 'name']
+  if name in name_converter.keys():
+    name = name_converter[name]
   if len(name) > 25:
     name = name[:22] + '... '
   color = '{:02x}{:02x}{:02x}'.format(*[int(x) for x in uniqueness_df.loc[idx, 'rgb']])

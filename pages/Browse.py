@@ -5,25 +5,26 @@ import os
 from data.loaded_data import uniqueness_df, pred_spec_bars
 from utils.utils import *
 from components import display
+import re
 DISPLAY_STRUCTURES = False
 
 
 st.title('Browse Predicted Metabolite Spectra Data')
-
 
 df = uniqueness_df
 pred_spec = pred_spec_bars
 
 for hsmi, smi in zip(df['hashed_smiles'].values, df['smiles'].values):
   #check if file already exists
-  mol = Chem.MolFromSmiles(smi)
+  mol = Chem.MolFromSmiles(re.sub('R[0-9]*', '*', smi))
   if not os.path.isfile('imgs/'+hsmi+'.png') and mol is not None:
     img = Draw.MolToImage(mol, size=(600,600), clearBackground=True)
     img.thumbnail((300,300))
     img.save('imgs/'+hsmi+".png")
 
-df_to_display = df.loc[:, ['name', 'lambda_max', 'smiles']].drop_duplicates(subset=['name'])
-df_to_display = df_to_display.rename(columns={'smiles': 'SMILES', 'lambda_max': 'Lambda Max'})
+df_to_display = df.loc[:, ['display_name', 'lambda_max', 'smiles']].drop_duplicates(subset=['display_name'])
+df_to_display = df_to_display.rename(columns={'display_name':'Name', 'smiles': 'SMILES', 'lambda_max': 'Lambda Max'})
+# df_to_display['name'] = convert_names_for_display(df_to_display)
 
 if DISPLAY_STRUCTURES:
   df_to_display['structure'] = ['imgs/'+smi+'.png' for smi in df['hashed_smiles'].values]
