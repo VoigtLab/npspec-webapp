@@ -6,15 +6,15 @@ st.title("Search")
 
 
 
-st.markdown("<h1 style='font-size:18px;'>Select a color you would like your molecule to absorb using the square below</h1>", unsafe_allow_html=True)
-_,col2,_ = st.columns(3)
-query_color = col2.color_picker("", value="#FF0000", help="Select a color")
-
+st.markdown("<h1 style='font-size:18px;'>Search molecules by predicted absorbance color using the selector tool in the sidebar</h1>", unsafe_allow_html=True)
+st.sidebar.markdown("<h1 style='font-size:20px;'>Color selector:</h1>", unsafe_allow_html=True)
+_, _, col, _, _ = st.sidebar.columns(5)
+query_color = col.color_picker("Color selection", value="#00FF00", help="Select a color", label_visibility="collapsed")
 
 #convert hex to rgb
 query_color = tuple(int(query_color.lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
-num_hits = st.slider("Number of hits to display", min_value=1, max_value=50, value=10) 
-# st.write("Selected color: {} (R, G, B)".format(query_color))
+st.sidebar.markdown("<h1 style='font-size:20px;'>Number of hits to display:</h1>", unsafe_allow_html=True)
+num_hits = st.sidebar.slider("Number of hits to display", min_value=1, max_value=50, value=10, label_visibility="collapsed") 
 
 st.markdown("### Top hits")
 st.markdown("More information below")
@@ -27,8 +27,10 @@ col_1, col_2, col_3 = st.columns(3)
 for i, idx in enumerate(uniqueness_df.sort_values(by='color_dist_to_query').index[:num_hits]):
   mol = uniqueness_df.loc[idx, 'hashed_smiles']
   name = uniqueness_df.loc[idx, 'name']
+  if len(name) > 25:
+    name = name[:22] + '... '
   color = '{:02x}{:02x}{:02x}'.format(*[int(x) for x in uniqueness_df.loc[idx, 'rgb']])
-  display_text = f'<h1 style="color:#{color};text-align: center;font-size:18px;">{i+1}. {name}:</h1>'
+  display_text = f'<h1 style="color:#{color};text-align: left;font-size:14px;">{i+1}. {name}:</h1>'
   
   # get the reaminder
   if i%3==0:
