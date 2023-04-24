@@ -8,7 +8,7 @@ st.title("Search")
 
 st.markdown("<h1 style='font-size:18px;'>Select a color you would like your molecule to absorb using the square below</h1>", unsafe_allow_html=True)
 _,col2,_ = st.columns(3)
-query_color = col2.color_picker("", value="#FFFFFF", help="Select a color")
+query_color = col2.color_picker("", value="#FF0000", help="Select a color")
 
 
 #convert hex to rgb
