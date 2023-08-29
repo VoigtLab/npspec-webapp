@@ -55,7 +55,7 @@ if uploaded_spectra_file is not None:
 to_plot = uniqueness_df.copy()
 max_val = int(np.nanmax(uniqueness_df[uniqueness_df['steps']<np.inf]['steps'])+10)
 to_plot['steps'] = to_plot['steps'].map(lambda x: max_val if x == np.inf else x)
-fig = px.scatter(to_plot, y='steps', x='mean_dist', hover_name='name', 
+fig = px.scatter(to_plot, y='steps', x='mean_dist', hover_name='display_name', color='Family', 
       labels={'steps': 'Met. Steps', 'mean_dist': 'Uniqueness'}) 
 fig.update_layout(
     yaxis = dict(

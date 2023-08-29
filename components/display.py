@@ -2,10 +2,10 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import os 
 
-def show_structures_and_spectra(df_to_display, df, pred_spec):
-  selected_names = st.multiselect('#### Select molecules:', df_to_display['Name'], default=None, max_selections=10, 
+def show_structures_and_spectra(df_to_display, df, pred_spec, name_col='Name'):
+  selected_names = st.multiselect('#### Select molecules:', df_to_display[name_col], default=None, max_selections=10, 
   help = 'Enter molecule names to display structure and predicted absorbance peaks')
-  selected_indices = df_to_display[df_to_display['Name'].map(lambda x: x in selected_names)].index
+  selected_indices = df_to_display[df_to_display[name_col].map(lambda x: x in selected_names)].index
   selected_rows = df_to_display.loc[selected_indices, :]
   
   if len(selected_rows)==0:
@@ -18,7 +18,7 @@ def show_structures_and_spectra(df_to_display, df, pred_spec):
 
     col1, col2 = st.columns(2)
     mols_to_show = df.loc[selected_indices, 'hashed_smiles'].values
-    names_to_show = df_to_display.loc[selected_indices, 'Name'].values
+    names_to_show = df_to_display.loc[selected_indices, name_col].values
     for i, (mol, name) in enumerate(zip(mols_to_show, names_to_show)):
       color= '{:02x}{:02x}{:02x}'.format(*[int(x*255) for x in cmap(i)])
       if os.path.isfile('imgs/'+mol+'.png'):
@@ -34,7 +34,7 @@ def show_structures_and_spectra(df_to_display, df, pred_spec):
     for i, n in enumerate(selected_indices):
       query_name = df.loc[n, 'name']
       if query_name not in pred_spec.keys():
-        st.write('Could not retrieve spectrum for ', df_to_display.loc[n, 'Name'])
+        st.write('Could not retrieve spectrum for ', df_to_display.loc[n, name_col])
       else:
         results = list(zip(*pred_spec[query_name]))
         ax.bar(results[0], results[1], width=3, label = i+1, color = cmap(i), alpha=0.6)
