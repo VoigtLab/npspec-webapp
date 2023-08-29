@@ -52,7 +52,25 @@ if uploaded_spectra_file is not None:
   uniqueness_df = uniqueness_df.dropna(subset='mean_dist')
 
 # Plot distance vs. uniqueness
-to_plot = uniqueness_df.copy()
+
+filt_steps = st.checkbox('Filter by number of steps')
+
+uniqueness_to_show = st.slider(
+    r'Select a range for uniqueness to filter by:',
+    0.0, float(int(np.max(uniqueness_df['mean_dist']))+1), 
+    (0.0, float(int(np.max(uniqueness_df['mean_dist']))+1)))
+u_filt = (uniqueness_df['mean_dist']>uniqueness_to_show[0]) & (uniqueness_df['mean_dist']<uniqueness_to_show[1])
+
+if filt_steps:
+  non_inf = uniqueness_df[uniqueness_df['steps'] < np.inf]
+  steps_to_show = st.slider(
+      r'Select a range for number of steps to filter by:',
+      0, int(np.max(non_inf['steps']))+1, 
+      (0, int(np.max(non_inf['steps']))+1))
+  s_filt = (uniqueness_df['steps']>steps_to_show[0]) & \
+            (uniqueness_df['steps']<steps_to_show[1]) 
+
+to_plot = uniqueness_df.copy()[u_filt & s_filt]
 max_val = int(np.nanmax(uniqueness_df[uniqueness_df['steps']<np.inf]['steps'])+10)
 to_plot['steps'] = to_plot['steps'].map(lambda x: max_val if x == np.inf else x)
 fig = px.scatter(to_plot, y='steps', x='mean_dist', hover_name='display_name', color='Family', 
