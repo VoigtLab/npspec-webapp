@@ -17,7 +17,9 @@ met = met_graph
 # Redefine buyables and step count for E Coli
 
 col1, col2 = st.columns(2)
-uploaded_metabolite_file = col1.file_uploader("Upload a file for metabolic starting points or select an organism below", type="csv", 
+col1.markdown('### 1. Chassis selection')
+col2.markdown('### 2. Spectral background selection')
+uploaded_metabolite_file = col1.file_uploader("(Optional) Upload a file for metabolic starting points or select an organism below", type="csv", 
             help="The file should be a tsv with a column named 'smiles'")
 # col1.markdown("By default, the starting points are the metabolites naturally produced in E. Coli.")
 uploaded_spectra_file = col2.file_uploader("Upload a file for spectral comparison", type="csv", 
@@ -27,10 +29,9 @@ col2.markdown("By default, the spectral comparison is done with the predicted sp
 drop_down_disabled=False
 if uploaded_metabolite_file is not None:
   drop_down_disabled = True
-organism = st.selectbox(
-        "Select a chassis organism or upload a custom file above",
+organism = col1.selectbox(
+        "## Select a chassis organism or upload a custom file above",
         ("E. coli", "B. subtilis", "A. thaliana", "R. gelatinosus", "R. capsulatus", "P. putida"),
-        label_visibility={True:'visible',False:'hidden'}[drop_down_disabled],
         disabled=drop_down_disabled
     )
 organsim_dict = {"E. coli":"EC",
