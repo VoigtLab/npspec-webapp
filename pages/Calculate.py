@@ -11,32 +11,50 @@ from components import display
 st.title("Calculate spectral uniqueness and accessibility")
 
 # Load in the graph
-
+uniqueness_df = uniqueness_df.dropna(subset='mean_dist')
 met = met_graph
-
 # load in starting points
 # Redefine buyables and step count for E Coli
 
 col1, col2 = st.columns(2)
-uploaded_metabolite_file = col1.file_uploader("Upload a file for metabolic starting points", type="csv", 
+uploaded_metabolite_file = col1.file_uploader("Upload a file for metabolic starting points or select an organism below", type="csv", 
             help="The file should be a tsv with a column named 'smiles'")
-col1.markdown("By default, the starting points are the metabolites naturally produced in E. Coli.")
+# col1.markdown("By default, the starting points are the metabolites naturally produced in E. Coli.")
 uploaded_spectra_file = col2.file_uploader("Upload a file for spectral comparison", type="csv", 
             help="The file should be a csv with each row containing an absorbance spectrum and the columns representing wavelengths")
 col2.markdown("By default, the spectral comparison is done with the predicted spectra for all metabolites")
 
-# Calculate metabolic distance
+drop_down_disabled=False
 if uploaded_metabolite_file is not None:
+  drop_down_disabled = True
+organism = st.selectbox(
+        "Select a chassis organism or upload a custom file above",
+        ("E. coli", "B. subtilis", "A. thaliana", "R. gelatinosus", "R. capsulatus", "P. putida"),
+        label_visibility={True:'visible',False:'hidden'}[drop_down_disabled],
+        disabled=drop_down_disabled
+    )
+organsim_dict = {"E. coli":"EC",
+                 "B. subtilis":"BS", 
+                 "A. thaliana":"AT", 
+                 "R. gelatinosus":"RG", 
+                 "R. capsulatus":"RC",
+                 "P. putida":"PP"}
+
+# Calculate metabolic distance
+
+if uploaded_metabolite_file is not None:
+  drop_down_disabled=True
   building_blocks = load_building_blocks(uploaded_metabolite_file, sep='\t')
+  starting_nodes = []
+  for node in met.nodes:
+      if node in building_blocks:
+          starting_nodes.append(node)
+  met = metabolic_dijkstra(met, starting_nodes, path_length_field="path_length", 
+                          shortest_path_field="shortest_path")
+  uniqueness_df['steps'] = [met.nodes[s]['path_length'] if s in met.nodes else np.inf for s in uniqueness_df['smiles'] ]
 else:
-  building_blocks = ec_building_blocks
-starting_nodes = []
-for node in met.nodes:
-    if node in building_blocks:
-        starting_nodes.append(node)
-met = metabolic_dijkstra(met, starting_nodes, path_length_field="path_length", 
-                         shortest_path_field="shortest_path")
-uniqueness_df['steps'] = [met.nodes[s]['path_length'] if s in met.nodes else np.inf for s in uniqueness_df['smiles'] ]
+  uniqueness_df['steps'] = uniqueness_df["{}_steps".format(organsim_dict[organism])]
+
 
 # Calculate uniqueness
 if uploaded_spectra_file is not None:
@@ -86,4 +104,8 @@ st.plotly_chart(fig)
 # Display additional information
 df_to_display = uniqueness_df.loc[:, ['display_name','mean_dist', 'steps', 'smiles']].drop_duplicates(subset=['display_name'])
 df_to_display = df_to_display.rename(columns={'display_name':'Name','smiles': 'SMILES', 'mean_dist': 'Uniqueness', 'steps': 'Met. Steps'})
+
+st.markdown("`{}` metabolites match filters".format(len(df_to_display[u_filt & s_filt])))
+st.dataframe(df_to_display[u_filt & s_filt].sort_values('Uniqueness', ascending=False), use_container_width=True)
+
 display.show_structures_and_spectra(df_to_display, uniqueness_df, pred_spec_bars)
