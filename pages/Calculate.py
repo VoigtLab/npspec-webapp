@@ -52,15 +52,14 @@ if uploaded_spectra_file is not None:
   uniqueness_df = uniqueness_df.dropna(subset='mean_dist')
 
 # Plot distance vs. uniqueness
-
-filt_steps = st.checkbox('Filter by number of steps')
-
 uniqueness_to_show = st.slider(
     r'Select a range for uniqueness to filter by:',
     0.0, float(int(np.max(uniqueness_df['mean_dist']))+1), 
     (0.0, float(int(np.max(uniqueness_df['mean_dist']))+1)))
 u_filt = (uniqueness_df['mean_dist']>uniqueness_to_show[0]) & (uniqueness_df['mean_dist']<uniqueness_to_show[1])
 
+filt_steps = st.checkbox('Filter by number of steps')
+s_filt = uniqueness_df['steps']>0
 if filt_steps:
   non_inf = uniqueness_df[uniqueness_df['steps'] < np.inf]
   steps_to_show = st.slider(
