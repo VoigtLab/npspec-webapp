@@ -18,14 +18,18 @@ def show_structures_and_spectra(df_to_display, df, pred_spec, name_col='Name'):
 
     col1, col2 = st.columns(2)
     mols_to_show = df.loc[selected_indices, 'hashed_smiles'].values
+    smiles_to_show = df.loc[selected_indices, 'smiles'].values
     names_to_show = df_to_display.loc[selected_indices, name_col].values
     for i, (mol, name) in enumerate(zip(mols_to_show, names_to_show)):
       color= '{:02x}{:02x}{:02x}'.format(*[int(x*255) for x in cmap(i)])
+      pubchem_link = 'https://pubchem.ncbi.nlm.nih.gov/#query='+smiles_to_show[i]
       if os.path.isfile('imgs/'+mol+'.png'):
-        col1.markdown(f'<h1 style="color:#{color};font-size:18px;">{str(i+1)}. {name}:</h1>', unsafe_allow_html=True)
+        # col1.markdown(f'<h1 style="color:#{color};font-size:18px;">{str(i+1)}. [{name}]({pubchem_link}):</h1>', unsafe_allow_html=True)
+        # col1.markdown('<h1 style="color:#{};font-size:18px;">{}. [{}]({}):</h1>'.format(color, str(i+1), name, pubchem_link), unsafe_allow_html=True)
+        col1.markdown('<a style="color:#{};font-size:18px;">{}. [{}]({}):</a>'.format(color, str(i+1), name, pubchem_link), unsafe_allow_html=True)
         col1.image('imgs/'+mol+'.png', width=200)
       else:
-        col1.markdown(f'<h1 style="color:#{color};font-size:18px;">{str(i+1)}. {name}:</h1>', unsafe_allow_html=True)
+        col1.markdown(f'<a style="color:#{color};font-size:18px;">{str(i+1)}. {name}:</a>', unsafe_allow_html=True)
         col1.markdown(f'<h1 style="color:#{color};font-size:18px;">Cannot display structure</h1>', unsafe_allow_html=True)
     fig, ax = plt.subplots()
     ax.set_facecolor((1,1,1,1))
