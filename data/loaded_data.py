@@ -2,7 +2,7 @@ from .loading_utils import *
 
 name_converter = load_json('data/clean_name_to_display_name.json')
 
-uniqueness_df = load_csv('data/computed_uniqueness_scores.csv')
+uniqueness_df = load_csv('data/computed_uniqueness_scores_w_family_labels.csv')
 uniqueness_df['hashed_smiles'] = [str(hash_smiles(s)) for s in uniqueness_df['smiles']]
 uniqueness_df['display_name'] = uniqueness_df['name'].apply(lambda x: name_converter[x] if x in name_converter.keys() else x)
 
