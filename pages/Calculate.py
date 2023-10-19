@@ -21,10 +21,18 @@ col1.markdown('### 1. Chassis selection')
 col2.markdown('### 2. Spectral background selection')
 uploaded_metabolite_file = col1.file_uploader("(Optional) Upload a file for metabolic starting points or select an organism below", type="csv", 
             help="The file should be a tsv with a column named 'smiles'")
-# col1.markdown("By default, the starting points are the metabolites naturally produced in E. Coli.")
-uploaded_spectra_file = col2.file_uploader("Upload a file for spectral comparison", type="csv", 
-            help="The file should be a csv with each row containing an absorbance spectrum and the columns representing wavelengths")
-col2.markdown("By default, the spectral comparison is done with the predicted spectra for all metabolites")
+col2.markdown("By default, molecules are organized by thieir 'global' uniqueness score")
+
+metric_map = metrics = {c.replace('_', ' '):c for c in uniqueness_df}
+metrics = [c.replace('_', ' ') for c in uniqueness_df \
+              if pd.api.types.is_numeric_dtype(uniqueness_df[c])\
+              and not pd.api.types.is_bool_dtype(uniqueness_df[c])\
+              and all(uniqueness_df[c]<np.inf)  ]
+uniqueness_metric = col2.selectbox(
+        "## Select a metric ",
+        metrics
+    )
+selected_metric = metric_map[uniqueness_metric]
 
 drop_down_disabled=False
 if uploaded_metabolite_file is not None:
@@ -57,32 +65,19 @@ else:
   uniqueness_df['steps'] = uniqueness_df["{}_steps".format(organsim_dict[organism])]
 
 
-# Calculate uniqueness
-if uploaded_spectra_file is not None:
-  uploaded_spec_df = load_spec_df(uploaded_spectra_file, transpose=True)
-  background_spectra = filter_df(uploaded_spec_df).values
-  spectra_to_score = filter_df(pred_spec_df.transpose())
-  scores = calculate_uniquness(background_spectra, spectra_to_score)
-  cols_to_keep = [c for c in uniqueness_df.columns if c != 'mean_dist']
-  new_uniqueness_df = pd.DataFrame({'name': spectra_to_score.index, 'mean_dist': scores})
-
-  # this is not the right df to merge onto, need to figure that out
-  uniqueness_df = uniqueness_df.loc[:, cols_to_keep].merge(new_uniqueness_df, on='name', how='outer')
-  uniqueness_df = uniqueness_df.dropna(subset='mean_dist')
-
 # Plot distance vs. uniqueness
 uniqueness_to_show = st.slider(
-    r'Select a range for uniqueness to filter by:',
-    0.0, float(int(np.max(uniqueness_df['mean_dist']))+1), 
-    (0.0, float(int(np.max(uniqueness_df['mean_dist']))+1)))
-u_filt = (uniqueness_df['mean_dist']>=uniqueness_to_show[0]) & (uniqueness_df['mean_dist']<=uniqueness_to_show[1])
+    r'Select a range for uniqueness {} to filter by:'.format(uniqueness_metric),
+    0.0, float(int(np.max(uniqueness_df[selected_metric]))+1), 
+    (0.0, float(int(np.max(uniqueness_df[selected_metric]))+1)))
+u_filt = (uniqueness_df[selected_metric]>=uniqueness_to_show[0]) & (uniqueness_df[selected_metric]<=uniqueness_to_show[1])
 
 filt_steps = st.checkbox('Filter by number of steps')
 s_filt = uniqueness_df['steps']>=0
 if filt_steps:
   non_inf = uniqueness_df[uniqueness_df['steps'] < np.inf]
   steps_to_show = st.slider(
-      r'Select a range for number of steps to filter by:',
+      r'Select a range for number of heterelogous enzymatic steps to filter by:',
       0, int(np.max(non_inf['steps']))+1, 
       (0, int(np.max(non_inf['steps']))+1))
   s_filt = (uniqueness_df['steps']>=steps_to_show[0]) & \
@@ -91,8 +86,8 @@ if filt_steps:
 to_plot = uniqueness_df.copy()[u_filt & s_filt]
 max_val = int(np.nanmax(uniqueness_df[uniqueness_df['steps']<np.inf]['steps'])+10)
 to_plot['steps'] = to_plot['steps'].map(lambda x: max_val if x == np.inf else x)
-fig = px.scatter(to_plot, y='steps', x='mean_dist', hover_name='display_name', color='Family', 
-      labels={'steps': 'Met. Steps', 'mean_dist': 'Uniqueness'}) 
+fig = px.scatter(to_plot, y='steps', x=selected_metric, hover_name='display_name', color='Family', 
+      labels={'steps': 'Met. Steps', selected_metric: 'Uniqueness ({})'.format(uniqueness_metric)}) 
 fig.update_layout(
     yaxis = dict(
         tickmode = 'array',
@@ -103,10 +98,10 @@ fig.update_layout(
 st.plotly_chart(fig)
 
 # Display additional information
-df_to_display = uniqueness_df.loc[:, ['display_name','mean_dist', 'steps', 'smiles']].drop_duplicates(subset=['display_name'])
-df_to_display = df_to_display.rename(columns={'display_name':'Name','smiles': 'SMILES', 'mean_dist': 'Uniqueness', 'steps': 'Met. Steps'})
+df_to_display = uniqueness_df.loc[:, ['display_name',selected_metric, 'steps', 'smiles']].drop_duplicates(subset=['display_name'])
+df_to_display = df_to_display.rename(columns={'display_name':'Name','smiles': 'SMILES', selected_metric: 'Uniqueness ({})'.format(selected_metric), 'steps': 'Met. Steps'})
 
 st.markdown("`{}` metabolites match filters".format(len(df_to_display[u_filt & s_filt])))
-st.dataframe(df_to_display[u_filt & s_filt].sort_values('Uniqueness', ascending=False), use_container_width=True)
+st.dataframe(df_to_display[u_filt & s_filt].sort_values('Uniqueness ({})'.format(selected_metric), ascending=False), use_container_width=True)
 
 display.show_structures_and_spectra(df_to_display, uniqueness_df, pred_spec_bars)
