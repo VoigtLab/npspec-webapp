@@ -11,7 +11,7 @@ from components import display
 st.title("Calculate spectral uniqueness and accessibility")
 
 # Load in the graph
-uniqueness_df = uniqueness_df.dropna(subset='mean_dist')
+uniqueness_df = uniqueness_df.dropna(subset='ws_dist')
 met = met_graph
 # load in starting points
 # Redefine buyables and step count for E Coli
@@ -27,7 +27,7 @@ metric_map = metrics = {c.replace('_', ' '):c for c in uniqueness_df}
 metrics = [c.replace('_', ' ') for c in uniqueness_df \
               if pd.api.types.is_numeric_dtype(uniqueness_df[c])\
               and not pd.api.types.is_bool_dtype(uniqueness_df[c])\
-              and all(uniqueness_df[c]<np.inf)  ]
+              and all(uniqueness_df[c]<np.inf) and c != 'color_dist_to_query']
 uniqueness_metric = col2.selectbox(
         "## Select a metric ",
         metrics

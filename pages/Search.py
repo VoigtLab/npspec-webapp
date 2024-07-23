@@ -20,7 +20,7 @@ st.markdown("### Top hits")
 st.markdown("More information below")
 uniqueness_df['rgb'] = [convert_wl_to_rgb(w) for w in uniqueness_df['lambda_max']]
 uniqueness_df['color_dist_to_query'] = [l2_dist(query_color, rgb) for rgb in uniqueness_df['rgb']]
-to_display = uniqueness_df.sort_values(by='color_dist_to_query').iloc[:num_hits].loc[:, ['display_name', 'lambda_max', 'peak_info_x']]
+to_display = uniqueness_df.sort_values(by='color_dist_to_query').iloc[:num_hits].loc[:, ['display_name', 'lambda_max', 'peak_info']]
 to_display.rename(columns={'display_name':'Name', 'lambda_max': 'Wavelength of max abs. (nm)', 'peak_info':'Peak positions (nm)'}, inplace=True)
 
 col_1, col_2, col_3 = st.columns(3)
@@ -34,7 +34,7 @@ for i, idx in enumerate(uniqueness_df.sort_values(by='color_dist_to_query').inde
   color = '{:02x}{:02x}{:02x}'.format(*[int(x) for x in uniqueness_df.loc[idx, 'rgb']])
   display_text = f'<h1 style="color:#{color};text-align: left;font-size:14px;">{i+1}. {name}:</h1>'
   
-  # get the reaminder
+  # get the remainder
   if i%3==0:
     col = col_1
   elif i%3==1:
