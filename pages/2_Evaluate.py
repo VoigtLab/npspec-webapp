@@ -8,7 +8,7 @@ from data.loading_utils import load_building_blocks, load_spec_df
 from components import display
 
 
-st.title("Calculate spectral uniqueness and accessibility")
+st.title("Evaluate molecules using spectral properties and biosynthetic accesibility")
 
 # Load in the graph
 uniqueness_df = uniqueness_df.dropna(subset='ws_dist')

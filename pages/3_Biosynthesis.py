@@ -3,7 +3,7 @@ from data.loaded_data import uniqueness_df, reverse_name_converter, reaction_df,
 from utils.utils import *
 import re 
 
-st.title("Synthesis")
+st.title("Explore the biosynthetic routes of molecules")
 
 #select organism
 st.markdown('### Chassis selection')

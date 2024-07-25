@@ -9,18 +9,12 @@ import re
 DISPLAY_STRUCTURES = False
 
 
-st.title('Browse Predicted Metabolite Spectra Data')
+st.title('Browse predicted metabolite spectra data')
 
 df = uniqueness_df
 pred_spec = pred_spec_bars
 
-for hsmi, smi in zip(df['hashed_smiles'].values, df['smiles'].values):
-  #check if file already exists
-  mol = Chem.MolFromSmiles(re.sub('R[0-9]*', '*', smi))
-  if not os.path.isfile('imgs/'+hsmi+'.png') and mol is not None:
-    img = Draw.MolToImage(mol, size=(600,600), clearBackground=True)
-    img.thumbnail((300,300))
-    img.save('imgs/'+hsmi+".png")
+
 st.markdown('\n')
 wls_to_show = st.slider(
     r'Select a range of $\lambda_{max}$ (nm) values to filter by:',
@@ -33,6 +27,13 @@ df_to_display = df_to_display.rename(columns={'display_name':'Metabolite Name', 
 # df_to_display['name'] = convert_names_for_display(df_to_display)
 
 if DISPLAY_STRUCTURES:
+  for hsmi, smi in zip(df['hashed_smiles'].values, df['smiles'].values):
+    #check if file already exists
+    mol = Chem.MolFromSmiles(re.sub('R[0-9]*', '*', smi))
+    if not os.path.isfile('imgs/'+hsmi+'.png') and mol is not None:
+      img = Draw.MolToImage(mol, size=(600,600), clearBackground=True)
+      img.thumbnail((300,300))
+      img.save('imgs/'+hsmi+".png")
   df_to_display['structure'] = ['imgs/'+smi+'.png' for smi in df['hashed_smiles'].values]
   html = convert_df(df_to_display[wl_filt])
   st.markdown(
