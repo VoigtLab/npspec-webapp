@@ -9,6 +9,8 @@ import pickle
 import colour
 import numpy as np
 from data.loaded_data import name_converter
+from rdkit.Chem import AllChem as Chem
+import matplotlib.pyplot as plt
 
 def convert_wl_to_rgb(w):
     if (w >= 380 and w < 440):
@@ -89,3 +91,28 @@ def image_formatter(img_path: str) -> str:
 def convert_names_for_display(df):
     return [name_converter[n] if n in name_converter.keys() else n for n in df['name'].values]
 
+def get_brenda_link(brenda_id):
+    # some code is copied from clean_new_brenda_smiles.ipynb
+    # should have just replaced the id in the dataframe maybe
+    if pd.isna(brenda_id):
+        return None
+    else:
+        brids = brenda_id.split(',')
+        if len(brids) == 0:
+            return none
+        elif len(brids) == 1:
+            selected_brid = brids[0]
+    
+        else:
+            #check if there are BR and BS
+            if not all([x.startswith('BR') for x in brids]):
+                brids = [x for x in brids if not x.startswith('BR')]
+            selected_brid = brids[0]
+
+        if selected_brid.startswith('BR'):
+            return 'https://www.brenda-enzymes.org/structure.php?show=reaction&id={}&type=I&displayType=marvin'.format(selected_brid.replace('BR',''))
+        elif selected_brid.startswith('BS'):
+            return 'https://www.brenda-enzymes.org/structure.php?show=reaction&id={}&type=S&displayType=marvin'.format(selected_brid.replace('BS',''))
+        else:
+            print ('WARNING: Unknown Brenda ID type')
+            return None

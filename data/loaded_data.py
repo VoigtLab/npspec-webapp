@@ -1,6 +1,7 @@
 from .loading_utils import *
 
 name_converter = load_json('data/clean_name_to_display_name.json')
+reverse_name_converter = {v:k for k,v in name_converter.items()}
 
 uniqueness_df = load_csv('data/computed_uniqueness_scores.csv', sep='\t')
 uniqueness_df = get_family_labels(uniqueness_df)
@@ -30,3 +31,9 @@ met_graph = load_nx_graph(GRAPH_PATH)
 
 ec_building_blocks = load_building_blocks('data/e_coli_metabolites_from_pathways.csv', sep='\t') 
 ec_building_blocks.add('[Mg+2]')
+
+reaction_df = pd.read_csv('data/all_reactions.csv', sep='\t')
+
+for c in ['level_0', 'Unnamed: 0.1', 'Unnamed: 0']:
+    if c in reaction_df.columns:
+        reaction_df = reaction_df.drop(columns=[c])

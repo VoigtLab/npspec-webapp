@@ -18,10 +18,10 @@ met = met_graph
 
 col1, col2 = st.columns(2)
 col1.markdown('### 1. Chassis selection')
-col2.markdown('### 2. Spectral background selection')
+col2.markdown('### 2. Spectral ranking metric selection')
 uploaded_metabolite_file = col1.file_uploader("(Optional) Upload a file for metabolic starting points or select an organism below", type="csv", 
             help="The file should be a tsv with a column named 'smiles'")
-col2.markdown("By default, molecules are organized by thieir 'global' uniqueness score")
+col2.markdown("By default, molecules are organized by their 'global' uniqueness score")
 
 metric_map = metrics = {c.replace('_', ' '):c for c in uniqueness_df}
 metrics = [c.replace('_', ' ') for c in uniqueness_df \
