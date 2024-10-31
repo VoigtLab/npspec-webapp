@@ -2,6 +2,7 @@ import streamlit as st
 from data.loaded_data import uniqueness_df, reverse_name_converter, reaction_df, met_graph
 from utils.utils import *
 import re 
+from rdkit.Chem import Draw
 
 st.title("Explore the biosynthetic routes of molecules")
 
@@ -47,7 +48,7 @@ if len(target_entry):
   col1.markdown('<a style="font-size:18px;">[Target structure : ]({})</a>'.format(pubchem_link), unsafe_allow_html=True)
   
   fig, ax = plt.subplots(1)
-  ax.imshow(Chem.Draw.MolToImage(Chem.MolFromSmiles(smiles)))
+  ax.imshow(Draw.MolToImage(Chem.MolFromSmiles(smiles)))
   plt.xticks([])
   plt.yticks([])
   plt.box(False)
@@ -57,7 +58,7 @@ if len(target_entry):
   
   reaction_str_ls = []
   for step_num, rxn in enumerate(rxn_list):
-    rd_obj = Chem.ReactionFromSmarts(rxn, useSmiles=True)
+    rd_obj = AllChem.ReactionFromSmarts(rxn, useSmiles=True)
     entry = reaction_df[reaction_df['smiles'] == rxn].copy()
     if len(entry):
       entry['Reaction'] = entry['reaction_str'].fillna(entry['reaction_string']).fillna(entry['Reaction'])
@@ -81,7 +82,7 @@ if len(target_entry):
     st.markdown(str(step_num+1) + '. ' + entry['Reaction'].values[0]+' ['+links+']', unsafe_allow_html=True)
 
     fig, ax = plt.subplots(1)
-    ax.imshow(Chem.Draw.ReactionToImage(rd_obj, subImgSize=(300,500)))
+    ax.imshow(Draw.ReactionToImage(rd_obj, subImgSize=(300,500)))
     plt.xticks([])
     plt.yticks([])
     plt.box(False)

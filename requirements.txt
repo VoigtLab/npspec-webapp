@@ -1,5 +1,6 @@
 streamlit
 rdkit
+matplotlib
 networkx
 scipy
 plotly

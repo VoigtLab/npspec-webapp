@@ -6,10 +6,10 @@ import streamlit as st
 import pandas as pd
 import json
 import pickle
-import colour
 import numpy as np
 from data.loaded_data import name_converter
-from rdkit.Chem import AllChem as Chem
+from rdkit import Chem
+from rdkit.Chem import AllChem
 import matplotlib.pyplot as plt
 
 def convert_wl_to_rgb(w):

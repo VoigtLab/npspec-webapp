@@ -32,7 +32,7 @@ def load_nx_graph(path_name):
 
 def load_building_blocks(path_name, **kwargs):
     building_blocks = load_csv(path_name, **kwargs)
-    building_blocks = set([standardize_smiles(str(s)) for s in building_blocks['smiles'].values if '*' not in s])
+    building_blocks = set([standardize_smiles(str(s)) for s in building_blocks['smiles'].values if '*' not in str(s)])
     return building_blocks
 
 def load_spec_df(spec_df_path, transpose=True):
