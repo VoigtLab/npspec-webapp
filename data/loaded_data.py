@@ -12,20 +12,6 @@ pred_spec_bars = load_json('data/all_done_bars.json')
 for k in list(pred_spec_bars.keys()):
   pred_spec_bars[k.replace('_b3lyp','').split('/')[-1]] = pred_spec_bars[k]
 
-pred_spec_df = load_spec_df('data/all_done_spectra.csv', transpose=False)
-pred_spec_df.columns = [x.replace('_b3lyp','').split('/')[-1] for x in pred_spec_df.columns] 
-pred_spec_df = pred_spec_df.loc[:, ~pred_spec_df.columns.duplicated()]
-
-peaks_info = []
-for c in uniqueness_df['name']:
-    if c in pred_spec_df.columns:
-        spec = pred_spec_df[c].values
-        peak_info = list(get_peaks(spec/np.max(spec), pred_spec_df.index,  prominence = .1, width = 5))
-        peaks_info.append(peak_info)
-    else:
-        peaks_info.append([])
-uniqueness_df['peak_info'] = peaks_info
-
 GRAPH_PATH = 'data/whole_metabolic_network_labeled.pkl'
 met_graph = load_nx_graph(GRAPH_PATH)
 

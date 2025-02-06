@@ -1,7 +1,9 @@
 # metabs-webapp
 Webapp to display predicted spectral data for metabolites
 
-For simple deployment: `streamlit run Home.py`
+For simple deployment: 
+- `unzip -j data/webapp-data.zip -d data`
+- `streamlit run Home.py`
 
 
 To deploy a website that can be accessed with https :

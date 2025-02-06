@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
 
 COPY . .
 
+RUN unzip -j data/webapp-data.zip -d data 
+
 RUN pip3 install -r requirements.txt
 
 EXPOSE 8501

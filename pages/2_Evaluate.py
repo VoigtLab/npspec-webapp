@@ -3,7 +3,7 @@ import numpy as np
 import plotly.express as px
 from utils.utils import *
 from utils.spectranalysis_utils import *
-from data.loaded_data import met_graph, ec_building_blocks, uniqueness_df, pred_spec_bars, pred_spec_df
+from data.loaded_data import met_graph, ec_building_blocks, uniqueness_df, pred_spec_bars
 from data.loading_utils import load_building_blocks, load_spec_df
 from components import display
 
